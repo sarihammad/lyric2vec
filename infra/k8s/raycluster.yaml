@@ -1,0 +1,49 @@
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: lyric2vec-ray-cluster
+  namespace: default
+spec:
+  rayVersion: "2.35.0"
+  enableInTreeAutoscaling: false
+  headGroupSpec:
+    rayStartParams:
+      dashboard-host: "0.0.0.0"
+    template:
+      spec:
+        containers:
+          - name: ray-head
+            image: rayproject/ray-ml:2.35.0-py311
+            resources:
+              limits:
+                cpu: 2
+                memory: 4Gi
+              requests:
+                cpu: 1
+                memory: 2Gi
+            env:
+              - name: RAY_DISABLE_IMPORT_WARNING
+                value: "1"
+  workerGroupSpecs:
+    - groupName: worker-group
+      replicas: 3
+      minReplicas: 1
+      maxReplicas: 10
+      rayStartParams: {}
+      template:
+        spec:
+          containers:
+            - name: ray-worker
+              image: rayproject/ray-ml:2.35.0-py311
+              resources:
+                limits:
+                  cpu: 2
+                  memory: 4Gi
+                  nvidia.com/gpu: 1
+                requests:
+                  cpu: 1
+                  memory: 2Gi
+                  nvidia.com/gpu: 1
+              env:
+                - name: RAY_DISABLE_IMPORT_WARNING
+                  value: "1"

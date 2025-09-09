@@ -1,0 +1,74 @@
+# Optional: Weaviate vector database deployment
+# Uncomment and apply if you want to use Weaviate instead of FAISS
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: weaviate
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: weaviate
+#   template:
+#     metadata:
+#       labels:
+#         app: weaviate
+#     spec:
+#       containers:
+#       - name: weaviate
+#         image: semitechnologies/weaviate:1.19.0
+#         ports:
+#         - containerPort: 8080
+#         env:
+#         - name: QUERY_DEFAULTS_LIMIT
+#           value: "25"
+#         - name: AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED
+#           value: "true"
+#         - name: PERSISTENCE_DATA_PATH
+#           value: "/var/lib/weaviate"
+#         - name: DEFAULT_VECTORIZER_MODULE
+#           value: "none"
+#         - name: ENABLE_MODULES
+#           value: "text2vec-transformers"
+#         - name: TRANSFORMERS_INFERENCE_API
+#           value: "http://t2v-transformers:8080"
+#         volumeMounts:
+#         - name: weaviate-data
+#           mountPath: /var/lib/weaviate
+#         resources:
+#           limits:
+#             cpu: 2
+#             memory: 4Gi
+#           requests:
+#             cpu: 1
+#             memory: 2Gi
+#       volumes:
+#       - name: weaviate-data
+#         persistentVolumeClaim:
+#           claimName: weaviate-data
+#
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: weaviate-service
+# spec:
+#   selector:
+#     app: weaviate
+#   ports:
+#   - port: 8080
+#     targetPort: 8080
+#   type: ClusterIP
+#
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: weaviate-data
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 10Gi
