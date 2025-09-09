@@ -170,26 +170,6 @@ kubectl apply -f infra/k8s/api-service.yaml
 - **Grafana**: Pre-configured dashboard with key performance indicators
 - **Health Checks**: `/healthz` endpoint for liveness/readiness probes
 
-## Make Targets
-
-| Target     | Description                                             |
-| ---------- | ------------------------------------------------------- |
-| `setup`    | Install dependencies and setup environment              |
-| `data`     | Download/prepare raw data                               |
-| `prep`     | Build processed dataset                                 |
-| `train`    | Run distributed training with Ray                       |
-| `eval`     | Evaluate model performance                              |
-| `export`   | Export embeddings to artifacts                          |
-| `faiss`    | Build FAISS index                                       |
-| `api`      | Start API server locally                                |
-| `dash`     | Launch Streamlit dashboard                              |
-| `up`       | Start all Docker services                               |
-| `down`     | Stop all Docker services                                |
-| `test`     | Run test suite                                          |
-| `lint`     | Check code quality                                      |
-| `pipeline` | Run full pipeline: data → prep → train → export → faiss |
-| `clean`    | Clean processed data and artifacts                      |
-
 
 ## Dataset Licensing
 
