@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/api.Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../data/artifacts:/app/data/artifacts:ro
+      - ../models:/app/models:ro
+    env_file:
+      - ../.env
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # Optional: Weaviate vector database (disabled by default)
+  # weaviate:
+  #   image: semitechnologies/weaviate:1.19.0
+  #   ports:
+  #     - "8081:8080"
+  #   environment:
+  #     - QUERY_DEFAULTS_LIMIT=25
+  #     - AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED=true
+  #     - PERSISTENCE_DATA_PATH=/var/lib/weaviate
+  #     - DEFAULT_VECTORIZER_MODULE=none
+  #     - ENABLE_MODULES=text2vec-transformers
+  #     - TRANSFORMERS_INFERENCE_API=http://t2v-transformers:8080
+  #   volumes:
+  #     - weaviate_data:/var/lib/weaviate
+  #   restart: unless-stopped
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  # weaviate_data:
