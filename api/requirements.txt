@@ -1,0 +1,14 @@
+fastapi==0.115.*
+uvicorn[standard]==0.30.*
+pydantic==2.*
+numpy==1.26.*
+pandas==2.*
+scikit-learn==1.4.*
+torch==2.3.*
+torchaudio==2.3.*
+transformers==4.43.*
+librosa==0.10.*
+faiss-cpu==1.7.4
+prometheus-client==0.20.*
+orjson==3.*
+python-dotenv==1.0.*
